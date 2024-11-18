@@ -9,6 +9,7 @@ import 'pages/meal_note_page.dart';
 import 'pages/my_bmi_page.dart';
 import 'pages/food_calory_chart_page.dart';
 import 'pages/profile_page.dart';
+import 'pages/calory_calculator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/my_bmi': (context) => MyBmiPage(),
         '/food_calory_chart': (context) => FoodCaloryChartPage(),
         '/profile': (context) => ProfilePage(),
+        '/calory_calculator': (context) => CaloryCalculator(),
       },
     );
   }

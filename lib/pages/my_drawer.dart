@@ -74,6 +74,15 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.health_and_safety), // A more health-oriented icon
+            title: Text('Calory Calculator'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/calory_calculator');
+              // Add functionality for calory calculator
+            },
+          ),
+
+          ListTile(
             leading: Icon(Icons.dark_mode),
             title: Text('Dark Mode'),
             onTap: () {

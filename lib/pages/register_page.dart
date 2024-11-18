@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recipe/services/firestore_service.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -8,6 +9,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirestoreService _firestoreService = FirestoreService();
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
@@ -17,14 +20,23 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _register() async {
     try {
+      // Create user in Firebase Authentication
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      // Additional user information can be stored in Firebase Firestore if needed
+
+      // Add user details to Firestore
+      await _firestoreService.updateUserData(
+        fullName: _nameController.text.trim(),
+        nickname: _nicknameController.text.trim(),
+        phoneNumber: _numberController.text.trim(),
+        age: _ageController.text.trim(),
+      );
+
       Navigator.pushReplacementNamed(context, '/login');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -32,116 +44,111 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Align(
-          alignment: Alignment.centerLeft, // Align the "Register" title to the left
-          child: Text(
-            'Register',
-            style: TextStyle(
-              fontWeight: FontWeight.bold, // Makes the title bold
-              fontSize: 26, // Bigger font size
-            ),
-          ),
-        ),
-        backgroundColor: Colors.blue.shade600, // AppBar background color
+        title: Text('Register'),
+        backgroundColor: Colors.indigo.shade700,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20), // Adds space before the "Register" text at the top
             Text(
-              'Create an Account',
+              "Create Account",
               style: TextStyle(
-                fontSize: 24, // Larger text size for the label
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue.shade600, // Color of the label
+                color: Colors.indigo.shade700,
               ),
             ),
-            SizedBox(height: 20), // Adds space after the "Create an Account" text
-
-            // Full Name Field
-            TextField(
+            SizedBox(height: 16),
+            Text(
+              "Fill in your details below to register.",
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+            SizedBox(height: 24),
+            _buildTextField(
               controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Full Name',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(),
-              ),
+              labelText: 'Full Name',
+              icon: Icons.person,
             ),
             SizedBox(height: 16),
-
-            // Nickname Field
-            TextField(
+            _buildTextField(
               controller: _nicknameController,
-              decoration: InputDecoration(
-                labelText: 'Nickname',
-                prefixIcon: Icon(Icons.tag),
-                border: OutlineInputBorder(),
-              ),
+              labelText: 'Nickname',
+              icon: Icons.tag,
             ),
             SizedBox(height: 16),
-
-            // Email Field
-            TextField(
+            _buildTextField(
               controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email),
-                border: OutlineInputBorder(),
-              ),
+              labelText: 'Email',
+              icon: Icons.email,
+              inputType: TextInputType.emailAddress,
             ),
             SizedBox(height: 16),
-
-            // Phone Number Field
-            TextField(
+            _buildTextField(
               controller: _numberController,
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                prefixIcon: Icon(Icons.phone),
-                border: OutlineInputBorder(),
-              ),
+              labelText: 'Phone Number',
+              icon: Icons.phone,
+              inputType: TextInputType.phone,
             ),
             SizedBox(height: 16),
-
-            // Age Field
-            TextField(
+            _buildTextField(
               controller: _ageController,
-              decoration: InputDecoration(
-                labelText: 'Age',
-                prefixIcon: Icon(Icons.cake),
-                border: OutlineInputBorder(),
-              ),
+              labelText: 'Age',
+              icon: Icons.cake,
+              inputType: TextInputType.number,
             ),
             SizedBox(height: 16),
-
-            // Password Field
-            TextField(
+            _buildTextField(
               controller: _passwordController,
+              labelText: 'Password',
+              icon: Icons.lock,
               obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.lock),
-                border: OutlineInputBorder(),
-              ),
             ),
             SizedBox(height: 32),
-
-            // Register Button
-            ElevatedButton(
-              onPressed: _register,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue.shade300, // Light blue button color
-                minimumSize: Size(double.infinity, 50), // Button size
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _register,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  backgroundColor: Colors.indigo.shade700,
                 ),
-              ),
-              child: Text(
-                'Register',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                child: Text(
+                  'Register',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    IconData? icon,
+    TextInputType inputType = TextInputType.text,
+    bool obscureText = false,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: inputType,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: icon != null ? Icon(icon) : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
         ),
       ),
     );
