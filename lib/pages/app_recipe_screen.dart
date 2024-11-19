@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recipe/pages/view_all_items.dart';
 import '../Widget/food_items_display.dart';
 import '../Widget/my_icon_button.dart';
 import 'ai_screen.dart';
@@ -59,10 +60,10 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                     // for category
                     selectedCategory(),
                     const SizedBox(height: 10),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           "Quick & Easy",
                           style: TextStyle(
                             fontSize: 20,
@@ -70,11 +71,29 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ViewAllItems(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "View all",
+                            style: TextStyle(
+                              color: Colors.blue[300],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 30),
               StreamBuilder(
                 stream: selectedRecipes.snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -193,11 +212,6 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
             fontWeight: FontWeight.bold,
             height: 1,
           ),
-        ),
-        const Spacer(),
-        MyIconButton(
-          icon: Icons.notifications,
-          pressed: () {},
         ),
       ],
     );

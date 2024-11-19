@@ -12,6 +12,7 @@ import 'pages/my_bmi_page.dart';
 import 'pages/food_calory_chart_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/calory_calculator.dart';
+import 'services/quantity.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+      ChangeNotifierProvider(create: (_) => QuantityProvider())
     ],
     child: MyApp(),
   ),);
@@ -37,6 +39,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
         '/home': (context) => HomePage(),
+        '/my_recipes': (context) => MyRecipesPage(),
         '/my_recipes': (context) => MyRecipesPage(),
         '/meal_note': (context) => MealNotePage(),
         '/my_bmi': (context) => MyBmiPage(),

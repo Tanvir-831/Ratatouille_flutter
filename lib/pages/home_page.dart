@@ -21,7 +21,6 @@ class _HomePageState extends State {
     page = [
       const MyAppHomeScreen(),
       const FavoriteScreen(),
-       MyRecipesPage(),
       const AiScreen(),
     ];
     super.initState();
@@ -68,12 +67,6 @@ class _HomePageState extends State {
               selectedIndex == 1 ? Icons.favorite : Icons.favorite_border,
             ),
             label: "Favorite",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              selectedIndex == 2 ? Icons.menu_book : Icons.menu_book_outlined,
-            ),
-            label: "My Recipe",
           ),
           BottomNavigationBarItem(
             icon: Icon(
