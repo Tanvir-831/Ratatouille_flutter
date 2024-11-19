@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:recipe/services/favorite_provider.dart';
 import 'pages/splash_screen.dart';
 import 'pages/login_page.dart';
 import 'pages/register_page.dart';
@@ -14,7 +16,12 @@ import 'pages/calory_calculator.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+    ],
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
