@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:recipe/services/favorite_provider.dart';
 import 'pages/splash_screen.dart';
 import 'pages/login_page.dart';
 import 'pages/register_page.dart';
@@ -10,11 +12,18 @@ import 'pages/my_bmi_page.dart';
 import 'pages/food_calory_chart_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/calory_calculator.dart';
+import 'services/quantity.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+      ChangeNotifierProvider(create: (_) => QuantityProvider())
+    ],
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
@@ -30,6 +39,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
         '/home': (context) => HomePage(),
+        '/my_recipes': (context) => MyRecipesPage(),
         '/my_recipes': (context) => MyRecipesPage(),
         '/meal_note': (context) => MealNotePage(),
         '/my_bmi': (context) => MyBmiPage(),

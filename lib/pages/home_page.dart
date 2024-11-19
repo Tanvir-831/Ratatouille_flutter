@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipe/pages/ai_screen.dart';
 import 'package:recipe/pages/app_recipe_screen.dart';
 import 'package:recipe/pages/favourite_screen.dart';
+import 'package:recipe/pages/my_recipes_page.dart';
 import 'my_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -88,4 +89,3 @@ class _HomePageState extends State {
     );
   }
 }
-

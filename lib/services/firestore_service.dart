@@ -37,4 +37,19 @@ class FirestoreService {
     }
     return null;
   }
+
+  final CollectionReference recipeCollection =
+  FirebaseFirestore.instance.collection('recipes');
+
+  Future<void> addRecipe(Map<String, dynamic> recipeData) async {
+    await recipeCollection.add(recipeData);
+  }
+
+  Future<void> updateRecipe(String id, Map<String, dynamic> recipeData) async {
+    await recipeCollection.doc(id).update(recipeData);
+  }
+
+  Future<void> deleteRecipe(String id) async {
+    await recipeCollection.doc(id).delete();
+  }
 }

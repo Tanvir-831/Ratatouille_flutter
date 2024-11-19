@@ -82,13 +82,7 @@ class MyDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: Icon(Icons.dark_mode),
-            title: Text('Dark Mode'),
-            onTap: () {
-              // Add functionality for dark mode toggle
-            },
-          ),
+
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Sign Out'),

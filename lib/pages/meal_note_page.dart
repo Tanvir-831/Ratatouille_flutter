@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'my_drawer.dart';
 
 class MealNotePage extends StatefulWidget {
@@ -7,22 +8,21 @@ class MealNotePage extends StatefulWidget {
 }
 
 class _MealNotePageState extends State<MealNotePage> {
-  final List<Map<String, String>> _mealNotes = [];
   final _formKey = GlobalKey<FormState>();
 
   String? _category;
   String? _item;
-  String? _date; // Store date here
+  String? _date;
   String? _time;
 
-  void _showAddMealForm([int? index]) {
-    // If editing, prefill the form with existing data
-    if (index != null) {
-      final note = _mealNotes[index];
-      _category = note['category'];
-      _item = note['item'];
-      _date = note['date']; // Store date
-      _time = note['time'];
+  final _firestore = FirebaseFirestore.instance;
+
+  void _showAddMealForm([DocumentSnapshot? doc]) {
+    if (doc != null) {
+      _category = doc['category'];
+      _item = doc['item'];
+      _date = doc['date'];
+      _time = doc['time'];
     } else {
       _category = null;
       _item = null;
@@ -54,69 +54,82 @@ class _MealNotePageState extends State<MealNotePage> {
                     child: Text(category),
                   ))
                       .toList(),
-                  decoration: InputDecoration(labelText: 'Category'),
+                  decoration: InputDecoration(
+                    labelText: 'Category',
+                    prefixIcon: Icon(Icons.category),
+                  ),
                   onChanged: (value) => _category = value,
-                  validator: (value) => value == null ? 'Please select a category' : null,
+                  validator: (value) =>
+                  value == null ? 'Please select a category' : null,
                 ),
                 TextFormField(
                   initialValue: _item,
-                  decoration: InputDecoration(labelText: 'Item'),
+                  decoration: InputDecoration(
+                    labelText: 'Item',
+                    prefixIcon: Icon(Icons.fastfood),
+                  ),
                   onChanged: (value) => _item = value,
-                  validator: (value) => value!.isEmpty ? 'Please enter an item' : null,
+                  validator: (value) =>
+                  value!.isEmpty ? 'Please enter an item' : null,
                 ),
-                // Replaced description field with date field
                 TextFormField(
-                  controller: TextEditingController(text: _date), // Use controller to set text
-                  decoration: InputDecoration(labelText: 'Date'),
+                  controller: TextEditingController(text: _date),
+                  decoration: InputDecoration(
+                    labelText: 'Date',
+                    prefixIcon: Icon(Icons.calendar_today),
+                  ),
                   onTap: () async {
-                    FocusScope.of(context).requestFocus(FocusNode()); // Hide keyboard
+                    FocusScope.of(context).requestFocus(FocusNode());
                     DateTime? selectedDate = await showDatePicker(
                       context: context,
-                      initialDate: _date != null ? DateTime.parse(_date!) : DateTime.now(),
+                      initialDate: _date != null
+                          ? DateTime.parse(_date!)
+                          : DateTime.now(),
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2101),
                     );
                     if (selectedDate != null) {
                       setState(() {
-                        _date = '${selectedDate.toLocal()}'.split(' ')[0]; // Format as YYYY-MM-DD
+                        _date =
+                        '${selectedDate.toLocal()}'.split(' ')[0]; // YYYY-MM-DD
                       });
                     }
                   },
-                  validator: (value) => value!.isEmpty ? 'Please select a date' : null,
+                  validator: (value) =>
+                  value!.isEmpty ? 'Please select a date' : null,
                 ),
                 TextFormField(
                   initialValue: _time,
-                  decoration: InputDecoration(labelText: 'Time'),
+                  decoration: InputDecoration(
+                    labelText: 'Time',
+                    prefixIcon: Icon(Icons.access_time),
+                  ),
                   onChanged: (value) => _time = value,
-                  validator: (value) => value!.isEmpty ? 'Please enter the time' : null,
+                  validator: (value) =>
+                  value!.isEmpty ? 'Please enter the time' : null,
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        if (index != null) {
-                          // Update existing note
-                          _mealNotes[index] = {
-                            'category': _category!,
-                            'item': _item!,
-                            'date': _date!,
-                            'time': _time!,
-                          };
-                        } else {
-                          // Add new note
-                          _mealNotes.add({
-                            'category': _category!,
-                            'item': _item!,
-                            'date': _date!,
-                            'time': _time!,
-                          });
-                        }
-                      });
+                      final data = {
+                        'category': _category!,
+                        'item': _item!,
+                        'date': _date!,
+                        'time': _time!,
+                      };
+                      if (doc != null) {
+                        await _firestore
+                            .collection('meal_notes')
+                            .doc(doc.id)
+                            .update(data);
+                      } else {
+                        await _firestore.collection('meal_notes').add(data);
+                      }
                       Navigator.pop(context);
                     }
                   },
-                  child: Text(index != null ? 'Update Note' : 'Add Note'),
+                  child: Text(doc != null ? 'Update Note' : 'Add Note'),
                 ),
               ],
             ),
@@ -134,41 +147,52 @@ class _MealNotePageState extends State<MealNotePage> {
         backgroundColor: Colors.blue.shade600,
       ),
       drawer: MyDrawer(),
-      body: _mealNotes.isEmpty
-          ? Center(
-        child: Text(
-          'No meal notes yet. Click the + button to add one!',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
-          textAlign: TextAlign.center,
-        ),
-      )
-          : ListView.builder(
-        itemCount: _mealNotes.length,
-        itemBuilder: (context, index) {
-          final note = _mealNotes[index];
-          return Card(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              title: Text('${note['item']} (${note['category']})'),
-              subtitle: Text('${note['date']} - ${note['time']}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () => _showAddMealForm(index),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      setState(() {
-                        _mealNotes.removeAt(index);
-                      });
-                    },
-                  ),
-                ],
-              ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firestore.collection('meal_notes').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          final mealNotes = snapshot.data!.docs;
+          return mealNotes.isEmpty
+              ? Center(
+            child: Text(
+              'No meal notes yet. Click the + button to add one!',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
+          )
+              : ListView.builder(
+            itemCount: mealNotes.length,
+            itemBuilder: (context, index) {
+              final doc = mealNotes[index];
+              return Card(
+                margin:
+                EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  title: Text('${doc['item']} (${doc['category']})'),
+                  subtitle: Text('${doc['date']} - ${doc['time']}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _showAddMealForm(doc),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _firestore
+                              .collection('meal_notes')
+                              .doc(doc.id)
+                              .delete();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
