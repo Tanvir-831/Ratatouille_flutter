@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "1040819135074",
-    "project_id": "recipe-23d69",
-    "storage_bucket": "recipe-23d69.firebasestorage.app"
+    "project_number": "654782547028",
+    "firebase_url": "https://ratatouille-388-default-rtdb.firebaseio.com",
+    "project_id": "ratatouille-388",
+    "storage_bucket": "ratatouille-388.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1040819135074:android:85b6cedde0bfe10af7673b",
+        "mobilesdk_app_id": "1:654782547028:android:4c7916a1d1db911116d9c1",
         "android_client_info": {
           "package_name": "com.example.recipe"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCH959jNVaIkZqOW9vpLqQuBjHMkm0Wn3Q"
+          "current_key": "AIzaSyBbNubtdsNf1Sb5NmmVkKAMGOeBVXuM6J4"
         }
       ],
       "services": {
