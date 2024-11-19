@@ -39,13 +39,6 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.book),
-            title: Text('My Recipes'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/my_recipes');
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.note),
             title: Text('Meal Note'),
             onTap: () {

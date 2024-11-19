@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
         '/home': (context) => HomePage(),
-        '/my_recipes': (context) => MyRecipesPage(),
         '/meal_note': (context) => MealNotePage(),
         '/my_bmi': (context) => MyBmiPage(),
         '/food_calory_chart': (context) => FoodCaloryChartPage(),
