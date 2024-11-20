@@ -82,7 +82,6 @@ class MyDrawer extends StatelessWidget {
             },
           ),
 
-
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Sign Out'),

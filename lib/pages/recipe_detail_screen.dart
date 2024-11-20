@@ -155,31 +155,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+
                   // for rating
-                  Row(
-                    children: [
-                      const Icon(
-                        Iconsax.star1,
-                        color: Colors.amberAccent,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        widget.documentSnapshot['rating'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text("/5"),
-                      const SizedBox(width: 5),
-                      Text(
-                        "${widget.documentSnapshot['review'.toString()]} Reviews",
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
+
                   const SizedBox(height: 20),
                   Row(
                     children: [
