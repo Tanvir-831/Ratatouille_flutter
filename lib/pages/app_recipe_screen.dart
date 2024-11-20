@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:recipe/pages/view_all_items.dart';
 import '../Widget/food_items_display.dart';
-import '../Widget/my_icon_button.dart';
-import 'ai_screen.dart';
+import 'view_all_items.dart';
 
 class MyAppHomeScreen extends StatefulWidget {
   const MyAppHomeScreen({super.key});
@@ -14,24 +12,35 @@ class MyAppHomeScreen extends StatefulWidget {
 
 class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
   String category = "All";
-  // for category
+  String searchQuery = "";
+  final TextEditingController searchController = TextEditingController();
+
+  // Firebase references
   final CollectionReference categoriesItems =
   FirebaseFirestore.instance.collection("App-Category");
-  // for all items display
-  Query get fileteredRecipes =>
-      FirebaseFirestore.instance.collection("Complete-Flutter-App").where(
-        'category',
-        isEqualTo: category,
-      );
-  Query get allRecipes =>
-      FirebaseFirestore.instance.collection("Complete-Flutter-App");
-  Query get selectedRecipes =>
-      category == "All" ? allRecipes : fileteredRecipes;
+
+  Query get selectedRecipes {
+    if (searchQuery.isNotEmpty) {
+      // If there is a search query, filter recipes by name only
+      return FirebaseFirestore.instance
+          .collection("Complete-Flutter-App")
+          .where('name', isGreaterThanOrEqualTo: searchQuery)
+          .where('name', isLessThanOrEqualTo: "$searchQuery\uf8ff");
+    } else if (category != "All") {
+      // If a category is selected (but no search query), filter by category
+      return FirebaseFirestore.instance
+          .collection("Complete-Flutter-App")
+          .where('category', isEqualTo: category);
+    } else {
+      // Default: show all recipes
+      return FirebaseFirestore.instance.collection("Complete-Flutter-App");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Colors.white,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -46,9 +55,7 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                     headerParts(),
                     mySearchBar(),
                     const Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 20,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 20),
                       child: Text(
                         "Categories",
                         style: TextStyle(
@@ -57,7 +64,6 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                         ),
                       ),
                     ),
-                    // for category
                     selectedCategory(),
                     const SizedBox(height: 10),
                     Row(
@@ -112,7 +118,6 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                       ),
                     );
                   }
-                  // it means if snapshot has data then show the data otherwise show the progress bar
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
@@ -144,8 +149,8 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
-                      color:
-                      category == streamSnapshot.data!.docs[index]['name']
+                      color: category ==
+                          streamSnapshot.data!.docs[index]['name']
                           ? Colors.blue[300]
                           : Colors.white,
                     ),
@@ -157,8 +162,8 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
                     child: Text(
                       streamSnapshot.data!.docs[index]['name'],
                       style: TextStyle(
-                        color:
-                        category == streamSnapshot.data!.docs[index]['name']
+                        color: category ==
+                            streamSnapshot.data!.docs[index]['name']
                             ? Colors.white
                             : Colors.grey.shade600,
                         fontWeight: FontWeight.w600,
@@ -170,7 +175,6 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
             ),
           );
         }
-        // it means if snapshot has data then show the data otherwise show the progress bar
         return const Center(
           child: CircularProgressIndicator(),
         );
@@ -182,6 +186,12 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 22),
       child: TextField(
+        controller: searchController,
+        onChanged: (value) {
+          setState(() {
+            searchQuery = value.trim();
+          });
+        },
         decoration: InputDecoration(
           filled: true,
           prefixIcon: const Icon(Icons.search),
@@ -192,11 +202,13 @@ class _MyAppHomeScreenState extends State<MyAppHomeScreen> {
             color: Colors.grey,
           ),
           enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
