@@ -2,6 +2,9 @@
 
 **Tagline**: *"Unleashing your inner chef"*
 
+[[Watch the video]](https://youtu.be/bxGtY5MEnUU)
+
+
 ## Project Overview
 
 **Ratatouille** is a mobile application (Android) designed to simplify the cooking process by offering personalized recipes, guided cooking instructions, ingredient management, and a community-driven platform for food enthusiasts. The app caters to diverse dietary needs and health goals, empowering users to create delicious and nutritious meals effortlessly.
